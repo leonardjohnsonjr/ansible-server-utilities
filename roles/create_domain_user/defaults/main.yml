@@ -1,0 +1,15 @@
+---
+domain_user:
+  name: jdoe
+  firstname: John
+  surname: Doe
+  display_name: John Doe
+  upn: jdoe@example.com
+  sam_account_name: jdoe
+  password: null
+  path: OU=Users,DC=example,DC=com
+  groups:
+    - Domain Users
+  enabled: true
+  state: present
+  update_password: on_create

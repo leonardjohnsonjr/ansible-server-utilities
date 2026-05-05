@@ -1,0 +1,51 @@
+---
+# Cross-platform folder settings
+managed_folder:
+  path_by_os_family:
+    Windows: 'C:\Temp\AnsibleManaged'
+    Darwin: /Users/Shared/AnsibleManaged
+    Debian: /opt/ansible-managed
+    RedHat: /opt/ansible-managed
+    Suse: /opt/ansible-managed
+    default: /opt/ansible-managed
+  owner: ansiblelocal
+  group: ansiblelocal
+  mode: '0755'
+
+# Cross-platform local user settings
+local_user:
+  name: ansiblelocal
+  full_name: Ansible Local User
+  password: "{{ vault_local_user_password | default(omit) }}"
+  shell: /bin/bash
+  groups_by_os_family:
+    Windows:
+      - Users
+    Darwin:
+      - staff
+    Debian:
+      - sudo
+    RedHat:
+      - wheel
+    Suse:
+      - wheel
+    default: []
+  create_home: true
+  state: present
+
+# Windows Active Directory user settings.
+# This role should target a Windows domain controller or a host with RSAT AD PowerShell tools.
+domain_user:
+  name: jdoe
+  firstname: John
+  surname: Doe
+  display_name: John Doe
+  upn: jdoe@example.com
+  sam_account_name: jdoe
+  password: "{{ vault_domain_user_password }}"
+  path: OU=Users,DC=example,DC=com
+  groups:
+    - Domain Users
+  enabled: true
+  state: present
+  update_password: on_create

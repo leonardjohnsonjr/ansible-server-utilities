@@ -1,0 +1,15 @@
+---
+- name: Resolve managed folder path for host OS
+  ansible.builtin.set_fact:
+    create_folder_path: >-
+      {{ managed_folder.path_by_os_family[ansible_os_family]
+         | default(managed_folder.path_by_os_family[ansible_system])
+         | default(managed_folder.path_by_os_family.default) }}
+
+- name: Dispatch folder creation tasks for host OS family
+  ansible.builtin.include_tasks: "{{ create_folder_task_file }}"
+  vars:
+    create_folder_task_file: >-
+      {{ 'windows.yml' if ansible_os_family == 'Windows'
+         else 'macos.yml' if ansible_system == 'Darwin'
+         else 'linux.yml' }}

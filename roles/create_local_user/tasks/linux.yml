@@ -1,0 +1,12 @@
+---
+- name: Create local user on Linux
+  ansible.builtin.user:
+    name: "{{ local_user.name }}"
+    comment: "{{ local_user.full_name | default(omit) }}"
+    password: "{{ local_user.password | default(omit, true) }}"
+    shell: "{{ local_user.shell | default('/bin/bash') }}"
+    groups: "{{ create_local_user_groups | join(',') if create_local_user_groups | length > 0 else omit }}"
+    append: true
+    create_home: "{{ local_user.create_home | default(true) }}"
+    state: "{{ local_user.state | default('present') }}"
+  become: true

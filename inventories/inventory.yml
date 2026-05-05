@@ -1,0 +1,33 @@
+---
+all:
+  children:
+    linux:
+      hosts:
+        linux01.example.com:
+          ansible_host: 192.0.2.10
+          ansible_user: ansible
+          ansible_become: true
+    macos:
+      hosts:
+        mac01.example.com:
+          ansible_host: 192.0.2.20
+          ansible_user: ansible
+          ansible_become: true
+    windows:
+      hosts:
+        win01.example.com:
+          ansible_host: 192.0.2.30
+          ansible_user: ansible-admin@example.com
+          ansible_password: "{{ vault_windows_ansible_password }}"
+          ansible_connection: winrm
+          ansible_winrm_transport: kerberos
+          ansible_winrm_server_cert_validation: ignore
+    domain_controllers:
+      hosts:
+        dc01.example.com:
+          ansible_host: 192.0.2.40
+          ansible_user: domain-admin@example.com
+          ansible_password: "{{ vault_domain_admin_password }}"
+          ansible_connection: winrm
+          ansible_winrm_transport: kerberos
+          ansible_winrm_server_cert_validation: ignore

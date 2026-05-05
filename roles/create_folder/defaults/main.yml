@@ -1,0 +1,9 @@
+---
+managed_folder:
+  path_by_os_family:
+    Windows: 'C:\Temp\AnsibleManaged'
+    Darwin: /Users/Shared/AnsibleManaged
+    default: /opt/ansible-managed
+  owner: null
+  group: null
+  mode: '0755'

@@ -1,0 +1,9 @@
+---
+- name: Create folder on Linux
+  ansible.builtin.file:
+    path: "{{ create_folder_path }}"
+    state: directory
+    owner: "{{ managed_folder.owner | default(omit, true) }}"
+    group: "{{ managed_folder.group | default(omit, true) }}"
+    mode: "{{ managed_folder.mode | default('0755') }}"
+  become: true

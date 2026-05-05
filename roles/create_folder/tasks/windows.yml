@@ -1,0 +1,5 @@
+---
+- name: Create folder on Windows
+  ansible.windows.win_file:
+    path: "{{ create_folder_path }}"
+    state: directory

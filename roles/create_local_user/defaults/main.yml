@@ -1,0 +1,14 @@
+---
+local_user:
+  name: ansiblelocal
+  full_name: Ansible Local User
+  password: null
+  shell: /bin/bash
+  groups_by_os_family:
+    Windows:
+      - Users
+    Darwin:
+      - staff
+    default: []
+  create_home: true
+  state: present

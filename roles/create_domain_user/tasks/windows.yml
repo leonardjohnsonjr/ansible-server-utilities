@@ -1,0 +1,31 @@
+---
+- name: Ensure Active Directory PowerShell module is available
+  ansible.windows.win_shell: |
+    if (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
+      throw 'ActiveDirectory PowerShell module is not installed. Install RSAT AD tools or run on a domain controller.'
+    }
+  changed_when: false
+
+- name: Create or update Windows domain user
+  microsoft.ad.user:
+    identity: "{{ domain_user.sam_account_name }}"
+    name: "{{ domain_user.name }}"
+    firstname: "{{ domain_user.firstname | default(omit) }}"
+    surname: "{{ domain_user.surname | default(omit) }}"
+    display_name: "{{ domain_user.display_name | default(omit) }}"
+    upn: "{{ domain_user.upn }}"
+    sam_account_name: "{{ domain_user.sam_account_name }}"
+    password: "{{ domain_user.password }}"
+    path: "{{ domain_user.path }}"
+    enabled: "{{ domain_user.enabled | default(true) }}"
+    state: "{{ domain_user.state | default('present') }}"
+    update_password: "{{ domain_user.update_password | default('on_create') }}"
+
+- name: Add domain user to requested AD groups
+  microsoft.ad.group:
+    identity: "{{ item }}"
+    members:
+      add:
+        - "{{ domain_user.sam_account_name }}"
+    state: present
+  loop: "{{ domain_user.groups | default([]) }}"

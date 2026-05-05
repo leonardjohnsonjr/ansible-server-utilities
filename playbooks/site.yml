@@ -1,0 +1,13 @@
+---
+- name: Create folders and local users across Windows, macOS, and Linux
+  hosts: linux:macos:windows
+  gather_facts: true
+  roles:
+    - role: create_local_user
+    - role: create_folder
+
+- name: Create Windows Active Directory domain users
+  hosts: domain_controllers
+  gather_facts: true
+  roles:
+    - role: create_domain_user

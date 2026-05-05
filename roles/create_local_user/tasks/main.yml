@@ -1,0 +1,15 @@
+---
+- name: Resolve local user groups for host OS
+  ansible.builtin.set_fact:
+    create_local_user_groups: >-
+      {{ local_user.groups_by_os_family[ansible_os_family]
+         | default(local_user.groups_by_os_family[ansible_system])
+         | default(local_user.groups_by_os_family.default) }}
+
+- name: Dispatch local user creation tasks for host OS family
+  ansible.builtin.include_tasks: "{{ create_local_user_task_file }}"
+  vars:
+    create_local_user_task_file: >-
+      {{ 'windows.yml' if ansible_os_family == 'Windows'
+         else 'macos.yml' if ansible_system == 'Darwin'
+         else 'linux.yml' }}

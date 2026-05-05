@@ -1,0 +1,13 @@
+---
+- name: Verify domain user role is running on Windows
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Windows'
+    fail_msg: >-
+      Creating a Windows Active Directory domain user requires a Windows domain controller
+      or a Windows host with RSAT Active Directory PowerShell tools. This host is
+      {{ ansible_system }} / {{ ansible_os_family }}.
+    success_msg: Host is Windows; continuing with Active Directory user management.
+
+- name: Dispatch Windows domain user creation tasks
+  ansible.builtin.include_tasks: windows.yml

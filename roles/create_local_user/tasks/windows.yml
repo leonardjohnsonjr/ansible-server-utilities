@@ -1,0 +1,9 @@
+---
+- name: Create local user on Windows
+  ansible.windows.win_user:
+    name: "{{ local_user.name }}"
+    fullname: "{{ local_user.full_name | default(local_user.name) }}"
+    password: "{{ local_user.password | default(omit, true) }}"
+    groups: "{{ create_local_user_groups }}"
+    groups_action: add
+    state: "{{ local_user.state | default('present') }}"
