@@ -1,0 +1,6 @@
+---
+- name: Update ReadHat-based OS
+  ansible.builtin.dnf:
+    name: "*"
+    update-cache: true
+    state: latest

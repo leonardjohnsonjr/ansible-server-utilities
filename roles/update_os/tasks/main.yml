@@ -1,0 +1,9 @@
+---
+- name: Dispath operating system update for host OS family
+  ansible.builtin.include_tasks: "{{ update_os_task_file }}"
+  vars:
+    update_os_task_file: >-
+      {{ 'windows.yml' if ansible_os_family == 'Windows'
+         else 'macos.yml' if ansible_os_family == 'Darwin'
+         else 'debian.yml' if ansible_os_family == 'Debian'
+         else 'redhat.yml' if ansible_os_family == 'RedHat' }}

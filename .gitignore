@@ -1,0 +1,22 @@
+# Ansible vault files with actual secrets
+group_vars/all/vault.yml
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Ansible runtime
+*.retry
+.ansible/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/

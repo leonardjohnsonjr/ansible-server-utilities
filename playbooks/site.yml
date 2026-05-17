@@ -3,6 +3,7 @@
   hosts: linux:macos:windows
   gather_facts: true
   roles:
+    - role: update_os
     - role: create_local_user
     - role: create_folder
 
