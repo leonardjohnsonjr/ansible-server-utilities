@@ -33,7 +33,8 @@ roles/<role_name>/tasks/windows.yml
 ## Project Tree
 
 ```text
-ansible-cross-platform-user-folder/
+ansible-server-utilities/
+├── .gitignore
 ├── ansible.cfg
 ├── group_vars/
 │   └── all/
@@ -57,12 +58,18 @@ ansible-cross-platform-user-folder/
     │       ├── macos.yml
     │       ├── main.yml
     │       └── windows.yml
-    └── create_local_user/
-        ├── defaults/main.yml
+    ├── create_local_user/
+    │   ├── defaults/main.yml
+    │   └── tasks/
+    │       ├── linux.yml
+    │       ├── macos.yml
+    │       ├── main.yml
+    │       └── windows.yml
+    └── update_os/
         └── tasks/
-            ├── linux.yml
-            ├── macos.yml
+            ├── debian.yml
             ├── main.yml
+            ├── redhat.yml
             └── windows.yml
 ```
 
@@ -102,6 +109,7 @@ Sensitive values should go in an encrypted vault file:
 ansible-vault create group_vars/all/vault.yml
 ```
 
+The repository includes a `.gitignore` entry to exclude `group_vars/all/vault.yml` from version control.
 Use `group_vars/all/vault.example.yml` as a starting point.
 
 ## Run
