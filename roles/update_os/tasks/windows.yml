@@ -1,0 +1,14 @@
+---
+- name: Update Windows-based OS
+  ansible.builtin.win_updates:
+    category_names:
+      - CriticalUpdates
+      - SecurityUpdates
+      - UpdatesRollups
+    state: installed
+  register: update_result
+
+- name: Reboot server is updates required a restart
+  ansible.builtin.win_reboot:
+    msg: "Updates installed. Rebooting the servers."
+  when: update_result.reboot_required

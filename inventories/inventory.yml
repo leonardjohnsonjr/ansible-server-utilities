@@ -2,32 +2,39 @@
 all:
   children:
     linux:
+      vars:
+        ansible_user: lenny
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        ansible_become: true
       hosts:
-        linux01.example.com:
-          ansible_host: 192.0.2.10
-          ansible_user: ansible
-          ansible_become: true
+        thinkpad:
+          ansible_host: 192.168.5.74
     macos:
+      vars:
+        ansible_user: ansible
+        ansible_become: true
       hosts:
         mac01.example.com:
           ansible_host: 192.0.2.20
-          ansible_user: ansible
-          ansible_become: true
     windows:
-      hosts:
-        win01.example.com:
-          ansible_host: 192.0.2.30
-          ansible_user: ansible-admin@example.com
+      vars:
+          ansible_user: ansible
           ansible_password: "{{ vault_windows_ansible_password }}"
           ansible_connection: winrm
-          ansible_winrm_transport: kerberos
+          ansible_winrm_transport: ntlm
+          ansible_winrm_scheme: https
+          ansible_port: 5986
           ansible_winrm_server_cert_validation: ignore
-    domain_controllers:
       hosts:
-        dc01.example.com:
-          ansible_host: 192.0.2.40
+        office-desktop:
+          ansible_host: 192.168.1.169
+    domain_controllers:
+      vars:
           ansible_user: domain-admin@example.com
           ansible_password: "{{ vault_domain_admin_password }}"
           ansible_connection: winrm
           ansible_winrm_transport: kerberos
           ansible_winrm_server_cert_validation: ignore
+      hosts:
+        dc01.example.com:
+          ansible_host: 192.0.2.40
