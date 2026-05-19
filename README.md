@@ -1,7 +1,8 @@
-# Cross-Platform Ansible User and Folder Management
+# Cross-Platform Ansible Client Management
 
 This project demonstrates a role architecture that dispatches OS-specific task files from a single role entry point. It supports:
 
+- Update OS on Linux (Debian/RHEL), and Windows. macOS may be supported later.
 - Creating a folder on Linux, macOS, and Windows
 - Creating a local user on Linux, macOS, and Windows
 - Creating a Windows Active Directory domain user from a Windows domain controller or RSAT-enabled Windows host
