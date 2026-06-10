@@ -1,6 +1,10 @@
 # Ansible vault files with actual secrets
 group_vars/all/vault.yml
 
+# Inventory files used for testing
+inventories/*.yml
+!inventories/inventory-sample.yml
+
 # IDE and OS files
 .vscode/
 .idea/
