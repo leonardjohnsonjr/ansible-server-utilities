@@ -3,19 +3,21 @@ all:
   children:
     linux:
       vars:
-        ansible_user: lenny
-        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        ansible_user: <account_on_destination_server>
+        ansible_ssh_private_key_file: <ssh_key>
         ansible_become: true
       hosts:
-        thinkpad:
+        almalinux:
           ansible_host: 192.168.5.73
+        redhat:
+          ansible_host: 192.168.5.72
     macos:
       vars:
         ansible_user: ansible
         ansible_become: true
       hosts:
-        mac01.example.com:
-          ansible_host: 192.0.2.20
+        macbook:
+          ansible_host: 192.168.4.73
     windows:
       vars:
           ansible_user: ansible
@@ -36,5 +38,5 @@ all:
           ansible_winrm_transport: kerberos
           ansible_winrm_server_cert_validation: ignore
       hosts:
-        dc01.example.com:
+        dc01:
           ansible_host: 192.0.2.40
