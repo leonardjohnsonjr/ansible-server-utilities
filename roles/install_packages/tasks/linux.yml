@@ -1,0 +1,5 @@
+---
+- name: Install software packages on Linux
+  ansible.builtin.package:
+    name: "{{ software_packages }}"
+    state: present
