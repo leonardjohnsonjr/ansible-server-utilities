@@ -42,9 +42,11 @@ ansible-server-utilities/
 │       ├── main.yml
 │       └── vault.example.yml
 ├── inventories/
+│   ├── inventory-sample.yml
 │   └── inventory.yml
 ├── playbooks/
-│   └── site.yml
+│   ├── site.yml
+│   └── update_os.yml
 ├── requirements.yml
 └── roles/
     ├── create_domain_user/
@@ -87,16 +89,35 @@ Required collections:
 - `ansible.windows`
 - `microsoft.ad`
 
+## Quick Start
+
+1. **Copy the sample inventory** as a starting point:
+   ```bash
+   cp inventories/inventory-sample.yml inventories/inventory.yml
+   ```
+
+2. **Edit the inventory** with your real hosts, usernames, and SSH keys:
+   ```bash
+   vim inventories/inventory.yml
+   ```
+
+3. **Install required collections**:
+   ```bash
+   ansible-galaxy collection install -r requirements.yml
+   ```
+
+4. **Run the playbooks** (see examples below)
+
 ## Inventory
 
-Edit `inventories/inventory.yml` with your real hosts, usernames, and connection settings.
+The inventory file defines four host groups:
 
-The sample inventory includes four groups:
+- `linux` — Linux hosts (Debian/RHEL-based)
+- `macos` — macOS hosts
+- `windows` — Windows client hosts
+- `domain_controllers` — Windows Domain Controllers or RSAT-enabled hosts
 
-- `linux`
-- `macos`
-- `windows`
-- `domain_controllers`
+See `inventories/inventory-sample.yml` for a complete template with all required variables for each group.
 
 The first play runs local user and folder creation against Linux, macOS, and Windows hosts. The second play runs Active Directory user creation against the `domain_controllers` group.
 
