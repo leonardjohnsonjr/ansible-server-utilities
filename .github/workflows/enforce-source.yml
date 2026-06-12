@@ -1,0 +1,16 @@
+name: Source Branch Restriction
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch source
+        if: github.head_ref != 'develop'
+        run: |
+          echo "Error: Only pull requests originating from the 'develop' branch can be merged into main."
+          exit 1
