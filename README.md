@@ -1,47 +1,32 @@
-# Cross-Platform Ansible Client Management
+# Ansible Server Utilities
 
-This project demonstrates a role architecture that dispatches OS-specific task files from a single role entry point. It supports:
+This project manages server utility tasks with Ansible roles. The current primary workflow installs software packages on Linux hosts, with package lists stored next to the inventory that uses them.
 
-- Update OS on Linux (Debian/RHEL), and Windows. macOS may be supported later.
-- Creating a folder on Linux, macOS, and Windows
-- Creating a local user on Linux, macOS, and Windows
-- Creating a Windows Active Directory domain user from a Windows domain controller or RSAT-enabled Windows host
-
-## Architecture
-
-Each role has a `tasks/main.yml` file that detects the operating system using gathered Ansible facts, then includes the correct OS-specific task file.
-
-Example dispatch pattern:
-
-```yaml
-- name: Dispatch folder creation tasks for host OS family
-  ansible.builtin.include_tasks: "{{ create_folder_task_file }}"
-  vars:
-    create_folder_task_file: >-
-      {{ 'windows.yml' if ansible_os_family == 'Windows'
-         else 'macos.yml' if ansible_system == 'Darwin'
-         else 'linux.yml' }}
-```
-
-This keeps shared logic in `main.yml` while separating platform-specific implementation into:
+The active playbook is:
 
 ```text
-roles/<role_name>/tasks/linux.yml
-roles/<role_name>/tasks/macos.yml
-roles/<role_name>/tasks/windows.yml
+playbooks/site.yml
 ```
 
-## Project Tree
+It currently runs:
+
+```yaml
+roles:
+  - role: install_packages
+```
+
+## Project Structure
 
 ```text
 ansible-server-utilities/
 ├── .gitignore
+├── README.md
 ├── ansible.cfg
-├── group_vars/
-│   └── all/
-│       ├── main.yml
-│       └── vault.example.yml
 ├── inventories/
+│   ├── group_vars/
+│   │   ├── all.yml
+│   │   ├── debian.yml
+│   │   └── redhat.yml
 │   ├── inventory-sample.yml
 │   └── inventory.yml
 ├── playbooks/
@@ -49,132 +34,160 @@ ansible-server-utilities/
 │   └── update_os.yml
 ├── requirements.yml
 └── roles/
-    ├── create_domain_user/
-    │   ├── defaults/main.yml
+    ├── install_packages/
+    │   ├── defaults/
+    │   │   └── main.yml
     │   └── tasks/
     │       ├── main.yml
+    │       └── linux.yml
+    ├── update_os/
+    │   └── tasks/
+    │       ├── debian.yml
+    │       ├── main.yml
+    │       ├── redhat.yml
     │       └── windows.yml
     ├── create_folder/
-    │   ├── defaults/main.yml
-    │   └── tasks/
-    │       ├── linux.yml
-    │       ├── macos.yml
-    │       ├── main.yml
-    │       └── windows.yml
     ├── create_local_user/
-    │   ├── defaults/main.yml
-    │   └── tasks/
-    │       ├── linux.yml
-    │       ├── macos.yml
-    │       ├── main.yml
-    │       └── windows.yml
-    └── update_os/
-        └── tasks/
-            ├── debian.yml
-            ├── main.yml
-            ├── redhat.yml
-            └── windows.yml
+    └── create_domain_user/
 ```
 
-## Requirements
-
-Install collections:
-
-```bash
-ansible-galaxy collection install -r requirements.yml
-```
-
-Required collections:
-
-- `ansible.windows`
-- `microsoft.ad`
-
-## Quick Start
-
-1. **Copy the sample inventory** as a starting point:
-   ```bash
-   cp inventories/inventory-sample.yml inventories/inventory.yml
-   ```
-
-2. **Edit the inventory** with your real hosts, usernames, and SSH keys:
-   ```bash
-   vim inventories/inventory.yml
-   ```
-
-3. **Install required collections**:
-   ```bash
-   ansible-galaxy collection install -r requirements.yml
-   ```
-
-4. **Run the playbooks** (see examples below)
+`inventories/group_vars/` is the source of truth for inventory variables. Keeping group variables beside `inventories/inventory.yml` makes `ansible-inventory` and `ansible-playbook` resolve the same values when playbooks live in the `playbooks/` directory.
 
 ## Inventory
 
-The inventory file defines four host groups:
+The inventory is configured in [ansible.cfg](ansible.cfg):
 
-- `linux` — Linux hosts (Debian/RHEL-based)
-- `macos` — macOS hosts
-- `windows` — Windows client hosts
-- `domain_controllers` — Windows Domain Controllers or RSAT-enabled hosts
+```ini
+inventory = inventories/inventory.yml
+roles_path = roles
+```
 
-See `inventories/inventory-sample.yml` for a complete template with all required variables for each group.
+The current inventory uses OS-family groups:
 
-The first play runs local user and folder creation against Linux, macOS, and Windows hosts. The second play runs Active Directory user creation against the `domain_controllers` group.
+- `debian`
+- `redhat`
+- `macos`
+- `windows`
+- `domain_controllers`
+
+Package installation currently targets Linux hosts. For example, `dell-inspiron` is in the `redhat` group, so it receives variables from:
+
+```text
+inventories/group_vars/redhat.yml
+```
+
+## Package Installation
+
+The `install_packages` role dispatches Linux package installation from:
+
+```text
+roles/install_packages/tasks/main.yml
+```
+
+For Debian and RedHat hosts, it includes:
+
+```text
+roles/install_packages/tasks/linux.yml
+```
+
+The Linux task installs each package in `software_packages`:
+
+```yaml
+software_packages:
+  - curl
+  - git
+  - rclone
+```
+
+Group-specific package lists live here:
+
+```text
+inventories/group_vars/debian.yml
+inventories/group_vars/redhat.yml
+```
+
+The role also has fallback defaults in:
+
+```text
+roles/install_packages/defaults/main.yml
+```
+
+Those defaults are used only if `software_packages` is not defined for a host.
 
 ## Variables
 
-Edit `group_vars/all/main.yml` for folder, local user, and domain user settings.
+Common variables live in:
 
-Sensitive values should go in an encrypted vault file:
-
-```bash
-ansible-vault create group_vars/all/vault.yml
+```text
+inventories/group_vars/all.yml
 ```
 
-The repository includes a `.gitignore` entry to exclude `group_vars/all/vault.yml` from version control.
-Use `group_vars/all/vault.example.yml` as a starting point.
+OS-specific package lists live in:
+
+```text
+inventories/group_vars/debian.yml
+inventories/group_vars/redhat.yml
+```
+
+To confirm what a host receives:
+
+```bash
+ansible-inventory -i inventories/inventory.yml --host dell-inspiron
+```
+
+To confirm a group variable directly:
+
+```bash
+ansible -i inventories/inventory.yml redhat -m debug -a var=software_packages
+```
 
 ## Run
 
 Syntax check:
 
 ```bash
-ansible-playbook playbooks/site.yml --syntax-check
+ansible-playbook -i inventories/inventory.yml playbooks/site.yml --syntax-check
 ```
 
-Run all plays:
+Run package installation for RedHat hosts:
 
 ```bash
-ansible-playbook playbooks/site.yml --ask-vault-pass
+ansible-playbook -i inventories/inventory.yml playbooks/site.yml --limit redhat -v
 ```
 
-Run only folder and local user creation:
+Run package installation for Debian hosts:
 
 ```bash
-ansible-playbook playbooks/site.yml --limit 'linux:macos:windows' --ask-vault-pass
+ansible-playbook -i inventories/inventory.yml playbooks/site.yml --limit debian -v
 ```
 
-Run only domain user creation:
+Preview changes with check mode:
 
 ```bash
-ansible-playbook playbooks/site.yml --limit domain_controllers --ask-vault-pass
+ansible-playbook -i inventories/inventory.yml playbooks/site.yml --limit redhat --check -v
+```
+
+## Optional Roles
+
+The repository still contains additional roles:
+
+- `update_os`
+- `create_folder`
+- `create_local_user`
+- `create_domain_user`
+
+These are not currently active in `playbooks/site.yml` unless you add them back to the playbook. Windows and Active Directory workflows require the collections listed in `requirements.yml`.
+
+Install those collections with:
+
+```bash
+ansible-galaxy collection install -r requirements.yml
 ```
 
 ## Notes
 
-- Windows domain user creation is intentionally isolated to the `domain_controllers` group.
-- macOS and Linux cannot directly create a Windows Active Directory user without calling a Windows domain controller, RSAT-enabled Windows host, or external directory API.
-- Password variables should be stored with Ansible Vault.
+- Keep active inventory variables under `inventories/group_vars/`.
+- `group_vars` files at the repository root are not the preferred layout for this project.
+- Linux hosts require SSH access and privilege escalation if package installation needs root permissions.
 - Windows hosts require WinRM configuration.
-- Linux and macOS hosts require SSH access and privilege escalation for user and system folder creation.
-
-## Verification Performed
-
-The project was checked for:
-
-- YAML parse validity
-- Expected role and playbook file structure
-- OS-dispatch pattern in each role
-- Presence of required Windows and Active Directory collections in `requirements.yml`
-- Separation of secrets into a vault example file
-
+- Sensitive values should be stored with Ansible Vault and excluded from version control.

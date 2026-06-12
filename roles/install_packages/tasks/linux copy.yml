@@ -1,12 +1,11 @@
+---
 - name: Install software packages on Linux
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
   loop: >-
     {{ software_packages
-       | default(software_packages_by_os_family.get(
-           ansible_os_family,
-           software_packages_by_os_family.default
-         )) }}
+       | default(software_packages_by_os_family[ansible_os_family]
+       | default(software_packages_by_os_family.default)) }}
   loop_control:
     label: "{{ item }}"

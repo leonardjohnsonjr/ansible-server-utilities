@@ -1,0 +1,11 @@
+---
+software_packages_by_os_family:
+  Debian:
+    - curl
+    - git
+  RedHat:
+    - curl
+    - git
+  default:
+    - curl
+    - git

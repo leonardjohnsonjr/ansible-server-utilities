@@ -8,14 +8,14 @@ all:
         ansible_become: true
       hosts:
         thinkpad:
-          ansible_host: 192.168.5.73
+          ansible_host: 192.168.5.74
     redhat:
       vars:
         ansible_user: lenny
         ansible_ssh_private_key_file: ~/.ssh/id_ed25519
         ansible_become: true
       hosts:
-        thinkpad:
+        dell-inspiron:
           ansible_host: 192.168.5.73
     macos:
       vars:
