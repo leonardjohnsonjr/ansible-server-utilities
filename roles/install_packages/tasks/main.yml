@@ -1,0 +1,9 @@
+---
+- name: Dispatch software packages for host OS family
+  ansible.builtin.include_tasks: "{{ update_os_task_file }}"
+  vars:
+    update_os_task_file: >-
+      {{ 'windows.yml' if ansible_os_family == 'Windows'
+         else 'macos.yml' if ansible_os_family == 'Darwin'
+         else 'linux.yml' if ansible_os_family == 'Debian'
+         else 'linux.yml' if ansible_os_family == 'RedHat' }}

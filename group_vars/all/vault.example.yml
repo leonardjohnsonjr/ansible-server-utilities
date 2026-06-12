@@ -1,7 +1,0 @@
----
-# Example only. Encrypt a real vault file with:
-# ansible-vault create group_vars/all/vault.yml
-vault_windows_ansible_password: REPLACE_ME
-vault_domain_admin_password: REPLACE_ME
-vault_local_user_password: REPLACE_ME
-vault_domain_user_password: REPLACE_ME

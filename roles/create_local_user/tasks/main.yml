@@ -12,4 +12,5 @@
     create_local_user_task_file: >-
       {{ 'windows.yml' if ansible_os_family == 'Windows'
          else 'macos.yml' if ansible_system == 'Darwin'
-         else 'linux.yml' }}
+         else 'linux.yml' if ansible_os_family == 'Debian'
+         else 'linux.yml' if ansible_os_family == 'RedHat' }}
