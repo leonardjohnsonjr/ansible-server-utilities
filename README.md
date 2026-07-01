@@ -167,6 +167,50 @@ Preview changes with check mode:
 ansible-playbook -i inventories/inventory.yml playbooks/site.yml --limit redhat --check -v
 ```
 
+## Troubleshooting Passwordless Sudo
+
+Linux playbooks use Ansible privilege escalation and require the remote SSH user to
+run sudo without an interactive password prompt. If fact gathering fails with the
+following output, configure passwordless sudo on the target system:
+
+```text
+sudo: interactive authentication is required
+Module result deserialization failed: No start of json char found
+```
+
+On the target system, create a dedicated sudoers file with `visudo`. Replace
+`lenny` if the inventory uses a different `ansible_user`:
+
+```bash
+sudo visudo -f /etc/sudoers.d/ansible-lenny
+```
+
+Add this line:
+
+```sudoers
+lenny ALL=(ALL:ALL) NOPASSWD: ALL
+```
+
+Secure the file and validate the complete sudo configuration before disconnecting:
+
+```bash
+sudo chmod 0440 /etc/sudoers.d/ansible-lenny
+sudo visudo -cf /etc/sudoers.d/ansible-lenny
+```
+
+From the Ansible controller, verify that privilege escalation works without a
+password prompt:
+
+```bash
+ansible optiplex5050 -i inventories/inventory.yml \
+  -m ansible.builtin.command -a 'whoami' --become
+```
+
+The command should return `root`. Ansible runs temporary modules through sudo, so
+granting access only to commands such as `/usr/bin/apt` generally does not work
+with normal Ansible `become` behavior. For better isolation, use a dedicated
+Ansible account with SSH-key-only authentication instead of a personal account.
+
 ## Optional Roles
 
 The repository still contains additional roles:
