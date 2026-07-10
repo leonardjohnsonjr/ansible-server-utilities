@@ -9,4 +9,4 @@
 
 - name: Show update result
   ansible.builtin.debug:
-    var: dnf_update_result
+    var: dnf_update_result.stdout_lines
