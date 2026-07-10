@@ -4,3 +4,9 @@
     name: "*"
     update_cache: true
     state: latest
+    update_only: true
+  register: dnf_update_result
+
+- name: Show update result
+  ansible.builtin.debug:
+    var: dnf_update_result.stdout_lines
