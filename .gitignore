@@ -1,5 +1,5 @@
 # Ansible vault files with actual secrets
-group_vars/all/vault.yml
+inventories/group_vars/all/vault.yml
 
 # Inventory files used for testing
 inventories/*.yml

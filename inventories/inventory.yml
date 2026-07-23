@@ -35,7 +35,7 @@ all:
           ansible_winrm_server_cert_validation: ignore
       hosts:
         office-desktop:
-          ansible_host: 192.168.1.169
+          ansible_host: 10.78.175.85
     domain_controllers:
       vars:
           ansible_user: domain-admin@example.com

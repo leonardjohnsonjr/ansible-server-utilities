@@ -2,5 +2,7 @@
 - name: Create folders and local users across Windows, macOS, and Linux
   hosts: linux:macos:windows
   gather_facts: true
+  vars_files:
+    - inventories/group_vars/all/vault.yml
   roles:
     - role: update_os
