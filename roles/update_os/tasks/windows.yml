@@ -5,9 +5,18 @@
       - CriticalUpdates
       - SecurityUpdates
       - UpdatesRollups
+      - DefinitionUpdates
+      - DeveloperKits
+      - FeaturePacks
+      - ServicePacks
     state: installed
   register: update_result
 
+- name: Display update results
+  ansible.builtin.debug:
+    msg: "Categories: {{ item.value.categories | join(', ') }} Installed Update: {{ item.value.title }} ({{ item.value.kb | join(', ') }})"
+  loop: "{{ update_result.updates | dict2items }}"
+    
 - name: Reboot server is updates required a restart
   ansible.builtin.win_reboot:
     msg: "Updates installed. Rebooting the servers."
