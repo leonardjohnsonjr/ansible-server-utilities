@@ -12,7 +12,7 @@ all:
             optiplex5050:
               ansible_host: 192.168.1.116
             thinkpad:
-              ansible_host: 192.168.1.113
+              ansible_host: 192.168.1.155
         redhat:
           hosts:
             dell-inspiron:
