@@ -1,0 +1,34 @@
+---
+- name: Install or update Flatpak on RedHat-based OS
+  ansible.builtin.dnf:
+    name: flatpak
+    state: latest
+
+- name: Update installed Flatpak applications and runtimes
+  ansible.builtin.command:
+    argv:
+      - flatpak
+      - update
+      - --assumeyes
+      - --noninteractive
+  register: flatpak_update_result
+  changed_when: "'Nothing to do.' not in flatpak_update_result.stdout"
+
+- name: Show Flatpak update result
+  ansible.builtin.debug:
+    var: flatpak_update_result.stdout_lines
+
+- name: Remove unused Flatpak runtimes and dependencies
+  ansible.builtin.command:
+    argv:
+      - flatpak
+      - uninstall
+      - --unused
+      - --assumeyes
+      - --noninteractive
+  register: flatpak_cleanup_result
+  changed_when: "'Nothing unused to uninstall' not in flatpak_cleanup_result.stdout"
+
+- name: Show Flatpak cleanup result
+  ansible.builtin.debug:
+    var: flatpak_cleanup_result.stdout_lines
