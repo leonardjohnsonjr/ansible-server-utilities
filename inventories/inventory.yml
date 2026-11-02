@@ -6,6 +6,7 @@ all:
         ansible_user: lenny
         ansible_ssh_private_key_file: ~/.ssh/lenny
         ansible_become: true
+<<<<<<< HEAD
       children:
         debian:
           hosts:
@@ -17,6 +18,19 @@ all:
           hosts:
             dell-inspiron:
               ansible_host: 192.168.1.108
+=======
+      hosts:
+        thinkpad:
+          ansible_host: 192.168.1.155
+    redhat:
+      vars:
+        ansible_user: lenny
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        ansible_become: true
+      hosts:
+        dell-inspiron:
+          ansible_host: 192.168.5.73
+>>>>>>> 400d9dc (updated thinkpad address.)
     macos:
       vars:
         ansible_user: ansible
