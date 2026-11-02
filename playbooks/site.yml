@@ -5,3 +5,4 @@
   roles:
     - role: update_os
     - role: install_packages
+    - role: install_flatpak
